@@ -1,77 +1,33 @@
 let turnos = [];
 
-function sacarTurno() {
-    let nombre = prompt("Ingrese su nombre:");
-    if (!nombre) {
-        alert("Debe ingresar un nombre válido.");
-        return;
-    }
-
-    let edad = prompt("Ingrese su edad:");
-    if (isNaN(edad) || edad <= 0) {
-        alert("Edad no válida.");
-        return;
-    }
-
-    let dni = prompt("Ingrese su DNI:");
-    if (!dni || isNaN(dni)) {
-        alert("DNI no válido.");
-        return;
-    }
-
-    let direccion = prompt("Ingrese su dirección:");
-    if (!direccion) {
-        alert("Debe ingresar una dirección válida.");
-        return;
-    }
-
-    let telefono = prompt("Ingrese su teléfono:");
-    if (!telefono || isNaN(telefono)) {
-        alert("telefono no válido.");
-        return;
-    }
-
-    let especialidades = ["Clínica Médica", "Cardiología", "Traumatología", "Oftalmología", "Ginecología"];
-    let especialidadMensaje = "Seleccione una especialidad:\n";
-    
-    especialidades.forEach((esp, index) => {
-        especialidadMensaje += `${index + 1}. ${esp}\n`;
-    });
-
-    let opcion = prompt(especialidadMensaje);
-    let especialidad = especialidades[opcion - 1];
-
-    if (!especialidad) {
-        alert("Opción inválida. Inténtelo de nuevo.");
-        return;
-    }
-
-    turnos.push({ nombre, especialidad });
+function sacarTurno(nombre, edad, dni, direccion, telefono, especialidad) {
+    turnos.push({ nombre, edad, dni, direccion, telefono, especialidad });
     alert(`Turno registrado para ${nombre} en ${especialidad}.`);
     console.log("Lista de turnos actualizada:", turnos);
 }
 
-function atenderTurno() {
-    if (turnos.length === 0) {
+function atenderTurno(listaTurnos) {
+    if (listaTurnos.length === 0) {
         alert("No hay turnos pendientes.");
         return;
     }
 
-    let turno = turnos.shift();
+    let turno = listaTurnos.shift();
     alert(`Atendiendo a ${turno.nombre} en ${turno.especialidad}.`);
-    console.log("Lista de turnos después de atender:", turnos);
+    console.log("Lista de turnos después de atender:", listaTurnos);
 }
 
-function filtrarTurnosPorEspecialidad() {
-    let especialidadBuscar = prompt("Ingrese la especialidad a filtrar:");
-    let filtrados = turnos.filter(turno => turno.especialidad.toLowerCase() === especialidadBuscar.toLowerCase());
+function filtrarTurnosPorEspecialidad(especialidadBuscar, listaTurnos) {
+    let filtrados = listaTurnos.filter(
+        (turno) => turno.especialidad.toLowerCase() === especialidadBuscar.toLowerCase()
+    );
 
     if (filtrados.length === 0) {
         alert("No se encontraron turnos para esa especialidad.");
     } else {
         let mensaje = "Turnos encontrados:\n";
-        filtrados.forEach(t => {
-            mensaje += `- ${t.nombre} (DNI: ${t.dni}, Edad: ${t.edad}, (Teléfono: ${t.telefono}, Dirección: ${t.direccion})\n`;
+        filtrados.forEach((t) => {
+            mensaje += `- ${t.nombre} (Edad: ${t.edad}, DNI: ${t.dni}, Tel: ${t.telefono}, Dirección: ${t.direccion})\n`;
         });
         alert(mensaje);
         console.log("Filtrados:", filtrados);
@@ -81,21 +37,50 @@ function filtrarTurnosPorEspecialidad() {
 function iniciarSimulador() {
     let opcion;
     do {
-        opcion = prompt("Bienvenido al turnero del hospital.\n Elija una opción:\n1. Sacar turno\n2. Atender turno\n3. Filtrar turnos por especialidad\n4. Salir");
+        opcion = prompt(
+            "Bienvenido al turnero del hospital\nElija una opción:\n1. Sacar turno\n2. Atender turno\n3. Filtrar por especialidad\n4. Salir"
+        );
 
         switch (opcion) {
             case "1":
-                sacarTurno();
+                let nombre = prompt("Ingrese su nombre:");
+                if (!nombre) return alert("Nombre inválido.");
+
+                let edad = prompt("Ingrese su edad:");
+                if (isNaN(edad) || edad <= 0) return alert("Edad no válida.");
+
+                let dni = prompt("Ingrese su DNI:");
+                if (!dni || isNaN(dni)) return alert("DNI no válido.");
+
+                let direccion = prompt("Ingrese su dirección:");
+                if (!direccion) return alert("Dirección no válida.");
+
+                let telefono = prompt("Ingrese su teléfono:");
+                if (!telefono || isNaN(telefono)) return alert("Teléfono no válido.");
+
+                let especialidades = ["Clínica Médica", "Cardiología", "Traumatología", "Oftalmología", "Ginecología"];
+                let mensajeEsp = "Seleccione una especialidad:\n";
+                especialidades.forEach((esp, i) => (mensajeEsp += `${i + 1}. ${esp}\n`));
+                let espOpcion = prompt(mensajeEsp);
+                let especialidad = especialidades[espOpcion - 1];
+
+                if (!especialidad) return alert("Opción inválida.");
+                sacarTurno(nombre, edad, dni, direccion, telefono, especialidad);
                 break;
+
             case "2":
-                atenderTurno();
+                atenderTurno(turnos);
                 break;
+
             case "3":
-                filtrarTurnosPorEspecialidad();
+                let filtro = prompt("Ingrese la especialidad a buscar:");
+                filtrarTurnosPorEspecialidad(filtro, turnos);
                 break;
+
             case "4":
                 alert("Gracias por atenderse con nosotros.");
                 break;
+
             default:
                 alert("Opción no válida. Inténtelo de nuevo.");
         }
